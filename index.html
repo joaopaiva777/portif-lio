@@ -133,18 +133,19 @@ p{margin:0}
 .palavra-fundo span{position:absolute;letter-spacing:-.05em;left:0;white-space:nowrap;font:600 clamp(120px,22vw,320px)/1 var(--f-display);color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.14);opacity:0}
 .capitulos{position:relative;min-height:340px;min-width:0}
 .capitulo{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:20px}
-.capitulo .num{letter-spacing:-.04em;font:300 clamp(56px,8vw,104px)/1 var(--f-display);color:var(--lilas)}
+.capitulo .num{display:block;overflow:hidden;overflow:clip;padding-bottom:.06em;letter-spacing:-.04em;font:300 clamp(56px,8vw,104px)/1 var(--f-display);color:var(--lilas)}
+.capitulo .num-in{display:inline-block;will-change:transform}
 .capitulo h2{font-size:clamp(32px,4.6vw,58px)}
 .capitulo p{max-width:40ch;color:var(--texto-suave);font-size:18px}
 .capitulo .tag{align-self:flex-start;background:var(--preto);border-radius:999px;padding:8px 14px;font:500 12px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
-.prisma-palco{perspective:1400px;display:grid;place-items:center;height:min(70vh,520px)}
+.prisma-palco{position:relative;perspective:1600px;display:grid;place-items:center;height:min(70vh,520px)}
+.brilho{position:absolute;width:min(560px,90%);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(201,182,255,.26),rgba(83,38,194,.18) 40%,transparent 68%);pointer-events:none;will-change:transform}
 .prisma{--s:clamp(220px,28vw,380px);width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d}
-.face{position:absolute;inset:0;border:7px solid var(--preto);border-radius:14px;overflow:hidden;background:var(--roxo-claro);backface-visibility:hidden}
-.face img{width:100%;height:100%;object-fit:cover}
-.face:nth-child(1){transform:rotateY(0deg) translateZ(calc(var(--s)/2))}
-.face:nth-child(2){transform:rotateY(90deg) translateZ(calc(var(--s)/2))}
-.face:nth-child(3){transform:rotateY(180deg) translateZ(calc(var(--s)/2))}
-.face:nth-child(4){transform:rotateY(270deg) translateZ(calc(var(--s)/2))}
+/* Baralho: as peças ficam empilhadas em profundidade; a da frente é arremessada a cada capítulo */
+.face{position:absolute;inset:0;border:7px solid var(--preto);border-radius:14px;overflow:hidden;background:var(--roxo-claro);box-shadow:0 30px 70px rgba(8,4,24,.55);will-change:transform}
+.face::after{content:"";position:absolute;inset:0;background:var(--roxo-noite);opacity:var(--sombra,0);pointer-events:none}
+.face img{width:100%;height:100%;object-fit:cover;will-change:transform}
+.sem-anim .face+.face{display:none}
 .face-motion{display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,var(--roxo-claro),var(--roxo-fundo) 75%)}
 .face-motion .anel{position:absolute;width:40%;aspect-ratio:1;border:2px solid var(--branco);border-radius:50%;animation:pulsa 2.4s ease-out infinite}
 .face-motion .anel:nth-child(2){animation-delay:.8s}.face-motion .anel:nth-child(3){animation-delay:1.6s}
@@ -152,8 +153,9 @@ p{margin:0}
 .face-motion .play{position:relative;width:76px;height:76px;border-radius:50%;background:var(--branco);display:grid;place-items:center}
 .face-motion .play::before{content:"";border-left:22px solid var(--preto);border-block:13px solid transparent;margin-left:6px}
 .pontos{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:grid;gap:12px;z-index:3}
-.pontos span{width:10px;height:10px;border-radius:50%;border:2px solid var(--branco);transition:background .3s,transform .3s}
-.pontos span.ativo{background:var(--branco);transform:scale(1.3)}
+.pontos span{display:block;width:8px;height:8px;border-radius:999px;border:1.5px solid var(--branco);transition:height .45s cubic-bezier(.22,1,.36,1),width .45s cubic-bezier(.22,1,.36,1),background .3s}
+@media (max-width:860px){.pontos span.ativo{height:8px;width:30px}}
+.pontos span.ativo{height:30px;background:var(--branco)}
 @media (max-width:860px){
   .apresentacao .wrap{grid-template-columns:1fr;grid-template-rows:auto 1fr;align-content:center;gap:12px;padding-block:72px 24px}
   .prisma-palco{height:260px}.prisma{--s:200px}
@@ -476,12 +478,13 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
     <div class="palavra-fundo" aria-hidden="true"><span>SOCIAL MEDIA</span><span>THUMBNAILS</span><span>MOTION</span><span>PRODUTO</span></div>
     <div class="wrap">
       <div class="capitulos">
-        <article class="capitulo"><span class="num">01</span><span class="tag">Social media</span><h2>Posts que fazem o hóspede reservar.</h2><p>Calendário, datas da cidade e roteiros de bate-volta para hotéis da rede ibis.</p></article>
-        <article class="capitulo"><span class="num">02</span><span class="tag">Thumbnails</span><h2>Um segundo para ganhar o clique.</h2><p>Capas que contam a história do vídeo antes do play, feitas por quem também produz canais.</p></article>
-        <article class="capitulo"><span class="num">03</span><span class="tag">Motion e vídeo</span><h2>Peças que se mexem no feed.</h2><p>Reels, anúncios, motion de produto e edição completa para YouTube.</p></article>
-        <article class="capitulo"><span class="num">04</span><span class="tag">Key visual</span><h2>Produto que dá sede só de olhar.</h2><p>Composições de produto com luz, textura e clima de campanha.</p></article>
+        <article class="capitulo"><span class="num"><span class="num-in">01</span></span><span class="tag">Social media</span><h2>Posts que fazem o hóspede reservar.</h2><p>Calendário, datas da cidade e roteiros de bate-volta para hotéis da rede ibis.</p></article>
+        <article class="capitulo"><span class="num"><span class="num-in">02</span></span><span class="tag">Thumbnails</span><h2>Um segundo para ganhar o clique.</h2><p>Capas que contam a história do vídeo antes do play, feitas por quem também produz canais.</p></article>
+        <article class="capitulo"><span class="num"><span class="num-in">03</span></span><span class="tag">Motion e vídeo</span><h2>Peças que se mexem no feed.</h2><p>Reels, anúncios, motion de produto e edição completa para YouTube.</p></article>
+        <article class="capitulo"><span class="num"><span class="num-in">04</span></span><span class="tag">Key visual</span><h2>Produto que dá sede só de olhar.</h2><p>Composições de produto com luz, textura e clima de campanha.</p></article>
       </div>
       <div class="prisma-palco">
+        <div class="brilho" aria-hidden="true"></div>
         <div class="prisma" id="prisma">
           <div class="face" data-titulo="Eventos em São Paulo"><img data-src="./work/social/eventos-sao-paulo.webp" alt="Post do ibis sobre eventos em São Paulo"></div>
           <div class="face" data-titulo="Thumbnail: Rejeição"><img data-src="./work/thumbnails/rejeicao.webp" alt="Thumbnail Rejeição"></div>
@@ -1239,27 +1242,49 @@ if (temGsap && !reduzido) {
     gsap.ticker.add(() => { alvo += (1 - alvo) * .06; mq.playbackRate += (alvo - mq.playbackRate) * .2; });
   }
 
-  // Apresentação fixa: prisma gira a cada capítulo
+  // Apresentação fixa: baralho de peças, número que rola e título palavra por palavra
   const caps = gsap.utils.toArray(".capitulo"), palavras = gsap.utils.toArray(".palavra-fundo span"), pontos = gsap.utils.toArray(".pontos span");
-  const cores = ["#1F0952", "#2B0E6E", "#12052F", "#3A148F"];
-  gsap.set(caps, {autoAlpha:0, y:60}); gsap.set(caps[0], {autoAlpha:1, y:0});
-  gsap.set(palavras[0], {opacity:1});
-  gsap.set("#prisma", {rotationX:-12});
-  const ap = gsap.timeline({scrollTrigger:{trigger:"#apresentacao", start:"top top", end:"+=320%", pin:true, scrub:1,
-    onUpdate:s => { const i = Math.min(3, Math.round(s.progress * 3)); pontos.forEach((p,j) => p.classList.toggle("ativo", j===i)); }}});
-  ap.fromTo(palavras[0], {xPercent:5}, {xPercent:-30, duration:1, ease:"none"}, 0);
+  const cartasAp = gsap.utils.toArray("#prisma .face");
+  caps.forEach(c => dividir(c.querySelector("h2")));
+  // Posição de cada peça no baralho: 0 é a da frente, as outras ficam atrás, menores e mais escuras
+  const giros = [0, 6, -5, 8];
+  const vaga = k => ({x:k * 26, y:-k * 20, z:-k * 120, rotationZ:giros[k] || 0, rotationY:0, xPercent:0, scale:1 - k * .05, opacity:1, "--sombra":Math.min(.65, k * .22)});
+  cartasAp.forEach((c, i) => gsap.set(c, vaga(i)));
+  gsap.set(caps, {autoAlpha:0}); gsap.set(caps[0], {autoAlpha:1});
+  gsap.set(palavras, {opacity:1, clipPath:"inset(0 100% 0 0)"}); gsap.set(palavras[0], {clipPath:"inset(0 0% 0 0)"});
+  const brilhos = [{xPercent:-8, yPercent:-6, scale:1}, {xPercent:14, yPercent:8, scale:1.15}, {xPercent:-12, yPercent:10, scale:.95}, {xPercent:10, yPercent:-10, scale:1.1}];
+  gsap.set(".brilho", brilhos[0]);
+  const PASSO_AP = 1.15, INICIO_AP = .5, trocas = [];
+  const ap = gsap.timeline({scrollTrigger:{trigger:"#apresentacao", start:"top top", end:"+=320%", pin:true, scrub:.8,
+    onUpdate:s => {
+      const tempo = s.progress * ap.duration();
+      const i = trocas.filter(t => tempo >= t).length;
+      pontos.forEach((p, j) => p.classList.toggle("ativo", j === i));
+    }}});
   for (let i = 1; i < 4; i++) {
-    const t = i - 1 + .55;
-    ap.to("#prisma", {rotationY:-90*i, duration:.45, ease:"power2.inOut"}, t)
-      .to("#prisma", {scale:.82, duration:.22, yoyo:true, repeat:1, ease:"power1.inOut"}, t)
-      .to(caps[i-1], {autoAlpha:0, y:-60, duration:.25}, t)
-      .fromTo(caps[i].querySelectorAll(".num, .tag, h2, p"), {y:70, rotateX:-50}, {y:0, rotateX:0, stagger:.04, duration:.35, ease:"power3.out"}, t + .15)
-      .to(caps[i], {autoAlpha:1, y:0, duration:.25}, t + .15)
-      .to(palavras[i-1], {opacity:0, duration:.2}, t)
-      .fromTo(palavras[i], {opacity:0, xPercent:20}, {opacity:1, xPercent:-30, duration:1.2, ease:"none"}, t)
-      .to("#apresentacao", {backgroundColor:cores[i], duration:.45}, t);
+    const t = INICIO_AP + (i - 1) * PASSO_AP, sai = caps[i - 1], entra = caps[i];
+    trocas.push(t + .3);
+    // Peça da frente é arremessada para a esquerda, girando; as de trás avançam uma vaga
+    ap.to(cartasAp[i - 1], {xPercent:-140, y:-70, rotationZ:-20, rotationY:38, opacity:0, duration:.55, ease:"power2.in"}, t);
+    for (let j = i; j < 4; j++) ap.to(cartasAp[j], {...vaga(j - i), duration:.6, ease:"power3.out"}, t + .1 + (j - i) * .05);
+    ap.fromTo(cartasAp[i].querySelector("img"), {scale:1.22}, {scale:1, duration:.9, ease:"power2.out"}, t + .1);
+    ap.to(".brilho", {...brilhos[i], duration:.8, ease:"power2.inOut"}, t);
+    // Texto que sai: palavras sobem e somem, número rola para cima
+    ap.to(sai.querySelectorAll(".wi"), {yPercent:-115, duration:.32, stagger:.018, ease:"power2.in"}, t)
+      .to(sai.querySelector(".num-in"), {yPercent:-105, duration:.32, ease:"power2.in"}, t)
+      .to(sai.querySelectorAll(".tag, p"), {y:-18, autoAlpha:0, duration:.28, ease:"power2.in"}, t)
+      .set(sai, {autoAlpha:0}, t + .3)
+      .set(entra, {autoAlpha:1}, t + .3)
+    // Texto que entra: número sobe de baixo, palavras sobem uma a uma
+      .fromTo(entra.querySelector(".num-in"), {yPercent:105}, {yPercent:0, duration:.45, ease:"power3.out"}, t + .3)
+      .fromTo(entra.querySelectorAll(".wi"), {yPercent:115}, {yPercent:0, duration:.5, stagger:.03, ease:"power3.out"}, t + .33)
+      .fromTo(entra.querySelectorAll(".tag, p"), {y:22, autoAlpha:0}, {y:0, autoAlpha:1, duration:.4, stagger:.07, ease:"power3.out"}, t + .4)
+    // Palavra vazada do fundo troca com uma cortina horizontal
+      .to(palavras[i - 1], {clipPath:"inset(0 0 0 100%)", duration:.5, ease:"power2.inOut"}, t)
+      .fromTo(palavras[i], {clipPath:"inset(0 100% 0 0)"}, {clipPath:"inset(0 0% 0 0)", duration:.6, ease:"power2.inOut"}, t + .2);
   }
-  ap.to({}, {duration:.3});
+  ap.to({}, {duration:.5});
+  ap.fromTo(".palavra-fundo", {xPercent:4}, {xPercent:-14, duration:ap.duration(), ease:"none"}, 0);
   window.prismaFlutua = gsap.to("#prisma", {y:-14, duration:3, yoyo:true, repeat:-1, ease:"sine.inOut"});
   if (document.documentElement.classList.contains("pausado")) aplicarPausa(true);
 
