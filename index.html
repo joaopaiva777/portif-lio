@@ -156,7 +156,8 @@ p{margin:0}
 .capitulo .tag{align-self:flex-start;background:var(--preto);border-radius:999px;padding:8px 14px;font:500 12px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
 .prisma-palco{position:relative;perspective:1600px;display:grid;place-items:center;height:min(70vh,520px)}
 .brilho{position:absolute;width:min(560px,90%);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(201,182,255,.26),rgba(83,38,194,.18) 40%,transparent 68%);pointer-events:none;will-change:transform}
-.prisma{--s:clamp(220px,28vw,380px);width:var(--s);height:var(--s);position:relative;transform-style:preserve-3d}
+/* Sem espaço 3D compartilhado: cada peça tem a própria perspectiva e a ordem da pilha decide quem fica na frente */
+.prisma{--s:clamp(220px,28vw,380px);width:var(--s);height:var(--s);position:relative;isolation:isolate}
 /* Baralho: as peças ficam empilhadas em profundidade; a da frente é arremessada a cada capítulo */
 .face{position:absolute;inset:0;border:7px solid var(--preto);border-radius:14px;overflow:hidden;background:var(--roxo-claro);box-shadow:0 30px 70px rgba(8,4,24,.55);will-change:transform}
 .face::after{content:"";position:absolute;inset:0;background:var(--roxo-noite);opacity:var(--sombra,0);pointer-events:none}
@@ -1332,7 +1333,8 @@ if (temGsap && !reduzido) {
   caps.forEach(c => dividir(c.querySelector("h2")));
   // Posição de cada peça no baralho: 0 é a da frente, as outras ficam atrás, menores e mais escuras
   const giros = [0, 6, -5, 8];
-  const vaga = k => ({x:k * 26, y:-k * 20, z:-k * 120, rotationZ:giros[k] || 0, rotationY:0, xPercent:0, scale:1 - k * .05, opacity:1, "--sombra":Math.min(.65, k * .22)});
+  const vaga = k => ({x:k * 26, y:-k * 20, rotationZ:giros[k] || 0, rotationY:0, xPercent:0, scale:1 - k * .07, opacity:1, zIndex:10 - k, "--sombra":Math.min(.65, k * .22)});
+  gsap.set(cartasAp, {transformPerspective:1200});
   cartasAp.forEach((c, i) => gsap.set(c, vaga(i)));
   gsap.set(caps, {autoAlpha:0}); gsap.set(caps[0], {autoAlpha:1});
   gsap.set(palavras, {opacity:1, clipPath:"inset(0 100% 0 0)"}); gsap.set(palavras[0], {clipPath:"inset(0 0% 0 0)"});
@@ -1349,7 +1351,9 @@ if (temGsap && !reduzido) {
     const t = INICIO_AP + (i - 1) * PASSO_AP, sai = caps[i - 1], entra = caps[i];
     trocas.push(t + .3);
     // Peça da frente é arremessada para a esquerda, girando; as de trás avançam uma vaga
-    ap.to(cartasAp[i - 1], {xPercent:-140, y:-70, rotationZ:-20, rotationY:38, opacity:0, duration:.55, ease:"power2.in"}, t);
+    // A peça arremessada sobe para o topo da pilha antes de sair, então nunca atravessa as outras
+    ap.set(cartasAp[i - 1], {zIndex:20}, t)
+      .to(cartasAp[i - 1], {xPercent:-140, y:-70, rotationZ:-20, rotationY:38, opacity:0, duration:.55, ease:"power2.in"}, t);
     for (let j = i; j < 4; j++) ap.to(cartasAp[j], {...vaga(j - i), duration:.6, ease:"power3.out"}, t + .1 + (j - i) * .05);
     ap.fromTo(cartasAp[i].querySelector("img"), {scale:1.22}, {scale:1, duration:.9, ease:"power2.out"}, t + .1);
     ap.to(".brilho", {...brilhos[i], duration:.8, ease:"power2.inOut"}, t);
