@@ -55,6 +55,22 @@ img{max-width:100%;display:block}
 .cortina-linha{width:min(240px,50vw);height:2px;background:rgba(255,255,255,.18);overflow:hidden}
 .cortina-linha i{display:block;height:100%;background:var(--lilas);transform-origin:0 50%;transform:scaleX(0)}
 [tabindex="-1"]:focus{outline:none}
+/* Tela de carregamento */
+.loader{position:fixed;inset:0;z-index:120}
+.loader-camada{position:absolute;inset:0}
+.loader-camada.a{background:var(--roxo-claro)}
+.loader-camada.b{background:var(--preto);display:grid;place-items:center;padding:0 max(24px,env(safe-area-inset-left,0px))}
+.loader-centro{width:min(420px,100%);display:grid;gap:22px}
+.loader-marca{display:flex;align-items:flex-end;overflow:hidden;overflow:clip;font:600 clamp(72px,14vw,132px)/.9 var(--f-display);letter-spacing:-.06em;color:var(--branco);padding-bottom:.04em}
+.loader-marca span{display:inline-block;transform:translateY(105%);animation:loaderSobe .9s cubic-bezier(.22,1,.36,1) forwards}
+.loader-marca span:nth-child(2){animation-delay:.08s}
+.loader-marca .loader-ponto{color:var(--lilas);animation-delay:.16s}
+@keyframes loaderSobe{to{transform:none}}
+.loader-barra{height:2px;background:rgba(255,255,255,.14);overflow:hidden}
+.loader-barra i{display:block;height:100%;background:var(--lilas);transform-origin:0 50%;transform:scaleX(0)}
+.loader-rodape{display:flex;justify-content:space-between;gap:16px;font:400 12px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.loader-rodape b{font-weight:400;color:var(--branco);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.loader-marca span{transform:none}}
 .wrap{max-width:var(--max);margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .eyebrow{font:400 12px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--lilas)}
 h1,h2,h3{font-family:var(--f-display);font-weight:var(--peso-titulo);line-height:1.02;letter-spacing:var(--track-titulo);text-wrap:balance;margin:0}
@@ -405,12 +421,78 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 </head>
 <body>
 
+<div class="loader" id="loader" role="status" aria-label="Carregando o portfólio">
+  <div class="loader-camada a"></div>
+  <div class="loader-camada b">
+    <div class="loader-centro">
+      <div class="loader-marca" aria-hidden="true"><span>J</span><span>P</span><span class="loader-ponto">.</span></div>
+      <div class="loader-barra"><i id="loader-barra"></i></div>
+      <div class="loader-rodape"><span>João Paiva · Designer gráfico</span><b id="loader-num">000</b></div>
+    </div>
+  </div>
+</div>
+<script>
+  // Recarregar sempre volta ao topo: o navegador não restaura a posição e o endereço perde a âncora
+  try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
+  try { if (location.hash) history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  window.scrollTo(0, 0);
+  window.addEventListener("beforeunload", () => window.scrollTo(0, 0));
+  window.addEventListener("pageshow", e => { if (e.persisted) window.scrollTo(0, 0); });
+
+  // Carregamento: a porcentagem segue o progresso real (fontes, biblioteca de animação e imagens da abertura)
+  (function(){
+    const tela = document.getElementById("loader"), barra = document.getElementById("loader-barra"), num = document.getElementById("loader-num");
+    const semMov = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const travar = e => e.preventDefault();
+    const teclas = e => { if ([" ", "PageDown", "PageUp", "Home", "End", "ArrowUp", "ArrowDown"].includes(e.key)) e.preventDefault(); };
+    window.addEventListener("wheel", travar, {passive:false});
+    window.addEventListener("touchmove", travar, {passive:false});
+    window.addEventListener("keydown", teclas);
+    const t0 = performance.now(), MINIMO = semMov ? 300 : 1400;
+    const tarefas = [
+      document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve(),
+      new Promise(r => document.readyState === "complete" ? r() : window.addEventListener("load", r, {once:true}))
+    ];
+    let feitas = 0, real = 0, mostrado = 0, saindo = false;
+    tarefas.forEach(p => p.then(() => { feitas++; real = feitas / tarefas.length; }));
+    setTimeout(() => { real = 1; }, 7000);
+    function quadro(){
+      const passou = performance.now() - t0;
+      const falso = Math.min(.9, passou / 2600);
+      const teto = Math.min(1, passou / MINIMO);
+      const meta = Math.min(teto, Math.max(real, falso));
+      mostrado += (meta - mostrado) * .12;
+      if (real >= 1 && teto >= 1 && meta - mostrado < .004) mostrado = 1;
+      barra.style.transform = "scaleX(" + mostrado.toFixed(4) + ")";
+      num.textContent = String(Math.round(mostrado * 100)).padStart(3, "0");
+      if (mostrado >= 1) sair(); else requestAnimationFrame(quadro);
+    }
+    function liberar(){
+      window.removeEventListener("wheel", travar); window.removeEventListener("touchmove", travar); window.removeEventListener("keydown", teclas);
+      tela.remove();
+    }
+    function avisar(){ window.loaderFim = true; document.dispatchEvent(new Event("loader:fim")); }
+    function sair(){
+      if (saindo) return; saindo = true;
+      window.scrollTo(0, 0);
+      if (semMov || !tela.animate) { avisar(); liberar(); return; }
+      const [a, b] = tela.querySelectorAll(".loader-camada"), centro = tela.querySelector(".loader-centro");
+      const curva = {easing:"cubic-bezier(.7,0,.3,1)", fill:"forwards"};
+      centro.animate([{transform:"none", opacity:1}, {transform:"translateY(-30px)", opacity:0}], {duration:380, easing:"ease-in", fill:"forwards"});
+      b.animate([{clipPath:"inset(0 0 0 0)"}, {clipPath:"inset(0 0 100% 0)"}], {...curva, duration:760, delay:200});
+      const ultima = a.animate([{clipPath:"inset(0 0 0 0)"}, {clipPath:"inset(0 0 100% 0)"}], {...curva, duration:760, delay:320});
+      setTimeout(avisar, 520);
+      ultima.onfinish = liberar;
+    }
+    requestAnimationFrame(quadro);
+  })();
+</script>
 <script>
   // Esconde a abertura só até a animação começar; se algo falhar, mostra tudo em 3 s
   document.documentElement.lang = "pt-BR";
   document.documentElement.classList.add("carregando");
   try { if (localStorage.getItem("jp-pausado") === "1") document.documentElement.classList.add("pausado"); } catch (e) {}
-  setTimeout(() => document.documentElement.classList.remove("carregando"), 3000);
+  setTimeout(() => document.documentElement.classList.remove("carregando"), 9000);
 </script>
 <div class="progresso" aria-hidden="true"></div>
 
@@ -1200,7 +1282,7 @@ if (temGsap && !reduzido) {
     const k = estreito ? .62 : 1;
     gsap.set(c, {xPercent:-50, yPercent:-50, x:x*k, y:y*k, z, rotation:r});
   });
-  const intro = gsap.timeline({defaults:{ease:"power4.out"}, onComplete:criarSaida});
+  const intro = gsap.timeline({defaults:{ease:"power4.out"}, onComplete:criarSaida, paused:true});
   intro.from("#titulo .wi", {yPercent:115, rotateX:-80, duration:1.1, stagger:.06})
        .from(".hero-in", {y:30, opacity:0, duration:.8, stagger:.12}, "-=.7")
        .from(cartas, {z:-900, opacity:0, rotationY:60, duration:1.4, stagger:.1, ease:"expo.out"}, 0.15)
@@ -1232,7 +1314,8 @@ if (temGsap && !reduzido) {
   // Se a pessoa rolar antes da entrada acabar, a entrada termina na hora
   const pularIntro = () => { if (window.scrollY > 10 && intro.isActive()) intro.progress(1); };
   window.addEventListener("scroll", pularIntro, {passive:true});
-  if (window.scrollY > 10) intro.progress(1);
+  // A entrada começa quando a tela de carregamento sobe
+  if (window.loaderFim) intro.play(); else document.addEventListener("loader:fim", () => intro.play(), {once:true});
 
   // Marquee acelera com a velocidade da rolagem
   const mq = document.querySelector(".marquee").getAnimations?.()[0];
