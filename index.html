@@ -161,7 +161,7 @@ p{margin:0}
 /* Baralho: as peças ficam empilhadas em profundidade; a da frente é arremessada a cada capítulo */
 .face{position:absolute;inset:0;border:7px solid var(--preto);border-radius:14px;overflow:hidden;background:var(--roxo-claro);box-shadow:0 30px 70px rgba(8,4,24,.55);will-change:transform}
 .face::after{content:"";position:absolute;inset:0;background:var(--roxo-noite);opacity:var(--sombra,0);pointer-events:none}
-.face img{width:100%;height:100%;object-fit:cover;will-change:transform}
+.face img,.face video{width:100%;height:100%;object-fit:cover;display:block;will-change:transform}
 .sem-anim .face+.face{display:none}
 .face-motion{display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,var(--roxo-claro),var(--roxo-fundo) 75%)}
 .face-motion .anel{position:absolute;width:40%;aspect-ratio:1;border:2px solid var(--branco);border-radius:50%;animation:pulsa 2.4s ease-out infinite}
@@ -295,6 +295,10 @@ section[id],main[id],#servicos{scroll-margin-top:72px}
 @media (max-width:480px){.produtos{grid-template-columns:1fr}}
 
 /* Motion */
+.motion-grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;align-items:center;perspective:1200px}
+.motion-item button{box-shadow:0 22px 50px rgba(12,9,18,.4)}
+.motion-item video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+@media (max-width:900px){.motion-grade{grid-template-columns:1fr 1fr}}
 .grade-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;perspective:1200px}
 .motion-card{border-radius:var(--raio);overflow:hidden;background:var(--preto);display:grid;grid-template-rows:auto 1fr}
 .video{aspect-ratio:4/5;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,var(--roxo-claro),var(--roxo-fundo) 70%);position:relative;overflow:hidden}
@@ -372,6 +376,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 .lb-fundo{position:absolute;inset:0;background:rgba(12,9,18,.9);backdrop-filter:blur(8px);cursor:zoom-out}
 .lb-fig{position:relative;margin:0;display:grid;gap:14px;justify-items:center;max-width:100%}
 .lb-quadro{position:relative;border:6px solid var(--preto);border-radius:14px;overflow:hidden;background:var(--roxo-claro);transform-origin:0 0;box-shadow:0 40px 90px rgba(0,0,0,.6);max-width:100%}
+.lb-quadro video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .lb-quadro img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none;will-change:transform}
 .lb-quadro.arrastavel{cursor:grab}
 .lb-quadro.arrastando{cursor:grabbing}
@@ -507,7 +512,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
   <div class="wrap">
     <a class="marca" href="#inicio" aria-label="João Paiva, início">JP<span>.</span></a>
     <nav class="nav" aria-label="Navegação principal">
-      <a href="#trabalhos">Trabalhos</a><a href="#thumbnails">Thumbnails</a><a href="#sobre">Sobre</a><a href="#servicos">Serviços</a>
+      <a href="#trabalhos">Trabalhos</a><a href="#thumbnails">Thumbnails</a><a href="#motion">Motion</a><a href="#sobre">Sobre</a><a href="#servicos">Serviços</a>
     </nav>
     <div class="topo-acoes">
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-movel">Menu</button>
@@ -515,7 +520,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
     </div>
   </div>
   <nav class="menu-movel" id="menu-movel" aria-label="Navegação" hidden>
-    <a href="#trabalhos">Trabalhos</a><a href="#thumbnails">Thumbnails</a><a href="#sobre">Sobre</a><a href="#servicos">Serviços</a><a href="#contato">Contato</a>
+    <a href="#trabalhos">Trabalhos</a><a href="#thumbnails">Thumbnails</a><a href="#motion">Motion</a><a href="#sobre">Sobre</a><a href="#servicos">Serviços</a><a href="#contato">Contato</a>
   </nav>
 </header>
 
@@ -572,7 +577,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
         <div class="prisma" id="prisma">
           <div class="face" data-titulo="Eventos em São Paulo"><img data-src="./work/social/eventos-sao-paulo.webp" alt="Post do ibis sobre eventos em São Paulo"></div>
           <div class="face" data-titulo="Thumbnail: Rejeição"><img data-src="./work/thumbnails/rejeicao.webp" alt="Thumbnail Rejeição"></div>
-          <div class="face face-motion" aria-label="Motion"><span class="anel"></span><span class="anel"></span><span class="anel"></span><span class="play"></span></div>
+          <div class="face" data-titulo="Motion"><video muted loop playsinline preload="none" poster="./work/motion/ibis-carrossel.webp" src="./work/motion/ibis-carrossel.mp4" aria-hidden="true"></video></div>
           <div class="face" data-titulo="Monster Ultra Violet"><img data-src="./work/produtos/monster-ultra-violet.webp" alt="Composição Monster Ultra Violet"></div>
         </div>
       </div>
@@ -640,17 +645,13 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
     </div>
   </section>
 
-  <section class="secao" id="motion" style="padding-top:20px" hidden>
+  <section class="secao" id="motion" style="padding-top:20px">
     <div class="wrap">
       <div class="secao-topo">
-        <div><p class="eyebrow">Motion e vídeo</p><h2 class="split">Peças que se mexem</h2></div>
-        <p class="intro">Motion para posts e anúncios, e edição de vídeo para canais do YouTube.</p>
+        <div><p class="eyebrow">Motion design</p><h2 class="split">Peças que se mexem</h2></div>
+        <p class="intro">Animações para feed, stories e campanhas da rede ibis.</p>
       </div>
-      <div class="grade-3" id="motion-grade">
-        <article class="motion-card"><div class="video"><span class="anel"></span><span class="play" aria-hidden="true"></span></div><div class="info"><h3>Motion para Reels</h3><span>ibis Styles Sorocaba</span></div></article>
-        <article class="motion-card"><div class="video"><span class="anel"></span><span class="play" aria-hidden="true"></span></div><div class="info"><h3>Motion publicitário de produto</h3><span>Varejo</span></div></article>
-        <article class="motion-card"><div class="video"><span class="anel"></span><span class="play" aria-hidden="true"></span></div><div class="info"><h3>Edição para YouTube</h3><span>Canais de narrativa</span></div></article>
-      </div>
+      <div class="motion-grade" id="motion-grade"></div>
     </div>
   </section>
 
@@ -733,7 +734,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
   <div class="lb-fundo" id="lb-fundo"></div>
   <figure class="lb-fig">
     <div class="lb-palco">
-      <div class="lb-quadro" id="lb-quadro"><img id="lb-img" alt="" draggable="false"><img id="lb-img2" alt="" draggable="false" aria-hidden="true" hidden><span class="lb-vazio" id="lb-vazio" hidden></span></div>
+      <div class="lb-quadro" id="lb-quadro"><img id="lb-img" alt="" draggable="false"><img id="lb-img2" alt="" draggable="false" aria-hidden="true" hidden><video id="lb-video" muted loop playsinline hidden></video><span class="lb-vazio" id="lb-vazio" hidden></span></div>
       <button type="button" class="lb-nav lb-ant" id="lb-ant" aria-label="Slide anterior" hidden>←</button>
       <button type="button" class="lb-nav lb-prox" id="lb-prox" aria-label="Próximo slide" hidden>→</button>
     </div>
@@ -800,6 +801,13 @@ const galerias = {
   // Thumbnails ficam na pasta work/thumbnails ao lado deste arquivo
   thumbs: [["Rejeição","rejeicao"],["Trevor","trevor"],["Michael","michael"],["Franklin","franklin"],["Despedida","despedida"],["Pesadelo","pesadelo"],["Big Boss","big-boss"],["Gale","gale"],["Ezio","ezio"],["Sozinho","sozinho"],["Esperança","esperanca"],["Maldade","maldade"],["Propósito","proposito"],["Incrível","incrivel"]]
     .map(([t, f]) => [t, "Thumbnail para YouTube", `./work/thumbnails/${f}.webp`]),
+  // Motion: título, cliente, arquivo (sem extensão), largura e altura
+  motion: [
+    ["Noite da Pizza", "ibis", "noite-da-pizza", 1080, 1528],
+    ["Dia da Cerveja", "ibis", "dia-da-cerveja", 1080, 1350],
+    ["Confraternização de fim de ano", "ibis · stories", "ibis-carrossel", 1080, 1920],
+    ["O evento é o motivo", "ibis Styles Sorocaba", "ibis-eventos", 1080, 1350]
+  ],
   produtos: [
     ["Pepsi","Estudo pessoal","./work/produtos/pepsi.webp"],
     ["Red Bull","Estudo pessoal","./work/produtos/red-bull.webp"],
@@ -828,6 +836,16 @@ function criarItem(titulo, meta, src, badge, slides){
   btn.addEventListener("click", () => abrir(url(src), `${titulo} · ${meta}`, fig.classList.contains("sem-img"), btn, slides && slides.length > 1 ? {titulo, meta, slides:slides.map(url)} : null));
   return fig;
 }
+// Motion: vídeos em loop, sem som, que só tocam enquanto aparecem na tela
+const grade = document.getElementById("motion-grade");
+galerias.motion.forEach(([t, m, arq, w, h]) => {
+  const fig = document.createElement("figure");
+  fig.className = "item motion-item";
+  fig.innerHTML = `<button type="button" aria-label="Ampliar ${t}" data-video="./work/motion/${arq}.mp4" data-ar="${(w / h).toFixed(4)}" style="aspect-ratio:${w} / ${h}"><span class="badge">Motion</span><video muted loop playsinline preload="none" poster="./work/motion/${arq}.webp" src="./work/motion/${arq}.mp4" aria-hidden="true"></video></button>`;
+  const btn = fig.querySelector("button");
+  btn.addEventListener("click", () => abrir("", `${t} · ${m}`, false, btn, null));
+  grade.appendChild(fig);
+});
 document.querySelectorAll("[data-galeria]").forEach(el => {
   if (el.dataset.galeria === "posts") return;
   galerias[el.dataset.galeria].forEach(([t, m, s, b]) => {
@@ -898,7 +916,7 @@ document.querySelectorAll(".split").forEach(dividir);
 /* ---------- Ampliar ---------- */
 // A imagem sai do card clicado, cresce até o centro e volta para o mesmo lugar ao fechar
 const lb = document.getElementById("lb"), lbQuadro = document.getElementById("lb-quadro"), lbImg = document.getElementById("lb-img");
-const lbVazio = document.getElementById("lb-vazio"), lbFundo = document.getElementById("lb-fundo"), lbBarra = document.getElementById("lb-barra"), lbFechar = document.getElementById("lb-fechar");
+const lbVideo = document.getElementById("lb-video"), lbVazio = document.getElementById("lb-vazio"), lbFundo = document.getElementById("lb-fundo"), lbBarra = document.getElementById("lb-barra"), lbFechar = document.getElementById("lb-fechar");
 const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const CURVA = "cubic-bezier(.22,1,.36,1)";
 let origem = null, animando = false;
@@ -1011,8 +1029,8 @@ async function abrir(src, legenda, ausente, fonte, lista){
   lbAnt.hidden = lbProx.hidden = !galeria;
 
   const r = fonte.getBoundingClientRect();
-  const imgCard = fonte.querySelector("img");
-  const prop = !ausente && imgCard && imgCard.naturalWidth ? imgCard.naturalWidth / imgCard.naturalHeight : r.width / r.height;
+  const imgCard = fonte.querySelector("img"), videoSrc = fonte.dataset.video;
+  const prop = fonte.dataset.ar ? Number(fonte.dataset.ar) : !ausente && imgCard && imgCard.naturalWidth ? imgCard.naturalWidth / imgCard.naturalHeight : r.width / r.height;
   const maxW = Math.min(window.innerWidth - 32, 1100), maxH = window.innerHeight * .78;
   let w = maxW, h = w / prop;
   if (h > maxH) { h = maxH; w = h * prop; }
@@ -1021,8 +1039,14 @@ async function abrir(src, legenda, ausente, fonte, lista){
   camadas.forEach(c => { c.getAnimations().forEach(a => a.cancel()); c.style.transform = ""; });
   camadas[1].hidden = true; camadas[1].dataset.src = "";
   lbQuadro.classList.toggle("arrastavel", !!galeria);
-  lbImg.hidden = !!ausente; lbVazio.hidden = !ausente;
-  if (ausente) lbVazio.textContent = legenda.split(" · ")[0];
+  lbVideo.hidden = !videoSrc;
+  lbImg.hidden = !!ausente || !!videoSrc; lbVazio.hidden = !ausente;
+  if (videoSrc) {
+    const noCard = fonte.querySelector("video");
+    lbVideo.src = videoSrc;
+    try { lbVideo.currentTime = noCard ? noCard.currentTime : 0; } catch (e) {}
+    lbVideo.play().catch(() => {});
+  } else if (ausente) lbVazio.textContent = legenda.split(" · ")[0];
   else {
     lbImg.removeAttribute("src");
     lbImg.src = src; lbImg.alt = legenda; lbImg.removeAttribute("aria-hidden");
@@ -1054,6 +1078,7 @@ function fechar(){
   lbAnt.hidden = lbProx.hidden = true;
   const terminar = () => {
     lb.hidden = true; animando = false;
+    if (!lbVideo.hidden) { lbVideo.pause(); lbVideo.hidden = true; lbVideo.removeAttribute("src"); lbVideo.load(); }
     if (origem) { origem.style.visibility = ""; origem.focus({preventScroll:true}); }
     window.removeEventListener("wheel", travaRolagem);
     window.removeEventListener("touchmove", travaRolagem);
@@ -1083,7 +1108,7 @@ lbFechar.addEventListener("click", fechar);
 const cortina = document.getElementById("cortina"), cortinaNome = document.getElementById("cortina-nome");
 const [camadaA, camadaB] = cortina.querySelectorAll(".cortina-camada");
 const linhaCortina = cortina.querySelector(".cortina-linha i");
-const nomesSecao = {inicio:"Início", apresentacao:"Trabalhos", trabalhos:"Trabalhos", thumbnails:"Thumbnails", sobre:"Sobre", servicos:"Serviços", contato:"Contato"};
+const nomesSecao = {inicio:"Início", apresentacao:"Trabalhos", trabalhos:"Trabalhos", thumbnails:"Thumbnails", motion:"Motion", sobre:"Sobre", servicos:"Serviços", contato:"Contato"};
 const secoesFixas = ["apresentacao", "posts", "thumbnails"];
 let trocandoSecao = false;
 function topoDe(alvo){
@@ -1228,7 +1253,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && !menuMovel
 document.addEventListener("click", e => { if (!menuMovel.hidden && !e.target.closest(".topo")) menu(false); });
 
 /* ---------- Seção atual no menu ---------- */
-const alvosMenu = ["#trabalhos", "#thumbnails", "#sobre", "#servicos", "#contato"].map(h => [h, document.querySelector(h)]);
+const alvosMenu = ["#trabalhos", "#thumbnails", "#motion", "#sobre", "#servicos", "#contato"].map(h => [h, document.querySelector(h)]);
 let quadroMenu = 0;
 function marcarAtual(){
   quadroMenu = 0;
@@ -1244,6 +1269,18 @@ function marcarAtual(){
 window.addEventListener("scroll", () => { if (!quadroMenu) quadroMenu = requestAnimationFrame(marcarAtual); }, {passive:true});
 marcarAtual();
 
+/* ---------- Vídeos ---------- */
+const naTela = new Set();
+const videosSite = [...document.querySelectorAll("#motion-grade video, #prisma video")];
+function atualizarVideos(){
+  const parar = document.documentElement.classList.contains("pausado") || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  videosSite.forEach(v => { if (!parar && naTela.has(v)) { const p = v.play(); if (p) p.catch(() => {}); } else v.pause(); });
+}
+if ("IntersectionObserver" in window) {
+  const ioVideo = new IntersectionObserver(es => { es.forEach(e => e.isIntersecting ? naTela.add(e.target) : naTela.delete(e.target)); atualizarVideos(); }, {threshold:.25});
+  videosSite.forEach(v => ioVideo.observe(v));
+}
+
 /* ---------- Pausar animações ---------- */
 const btnPausar = document.getElementById("pausar");
 function aplicarPausa(p){
@@ -1253,6 +1290,7 @@ function aplicarPausa(p){
   btnPausar.firstChild.textContent = p ? "▶" : "❚❚";
   if (window.prismaFlutua) p ? window.prismaFlutua.pause() : window.prismaFlutua.play();
   try { localStorage.setItem("jp-pausado", p ? "1" : "0"); } catch (e) {}
+  atualizarVideos();
 }
 btnPausar.addEventListener("click", () => aplicarPausa(btnPausar.getAttribute("aria-pressed") !== "true"));
 
@@ -1355,7 +1393,7 @@ if (temGsap && !reduzido) {
     ap.set(cartasAp[i - 1], {zIndex:20}, t)
       .to(cartasAp[i - 1], {xPercent:-140, y:-70, rotationZ:-20, rotationY:38, opacity:0, duration:.55, ease:"power2.in"}, t);
     for (let j = i; j < 4; j++) ap.to(cartasAp[j], {...vaga(j - i), duration:.6, ease:"power3.out"}, t + .1 + (j - i) * .05);
-    ap.fromTo(cartasAp[i].querySelector("img"), {scale:1.22}, {scale:1, duration:.9, ease:"power2.out"}, t + .1);
+    ap.fromTo(cartasAp[i].querySelector("img, video"), {scale:1.22}, {scale:1, duration:.9, ease:"power2.out"}, t + .1);
     ap.to(".brilho", {...brilhos[i], duration:.8, ease:"power2.inOut"}, t);
     // Texto que sai: palavras sobem e somem, número rola para cima
     ap.to(sai.querySelectorAll(".wi"), {yPercent:-115, duration:.32, stagger:.018, ease:"power2.in"}, t)
@@ -1453,7 +1491,7 @@ if (temGsap && !reduzido) {
   });
 
   // Motion: cartões vêm do fundo
-  gsap.from("#motion-grade .motion-card", {z:-600, rotationY:i => [30,0,-30][i], opacity:0, duration:1.2, stagger:.15, ease:"expo.out", scrollTrigger:{trigger:"#motion-grade", start:"top 85%"}});
+  gsap.from("#motion-grade .item", {z:-600, rotationY:i => [30,10,-10,-30][i], opacity:0, duration:1.2, stagger:.15, ease:"expo.out", scrollTrigger:{trigger:"#motion-grade", start:"top 85%"}});
 
   // Sobre: monograma 3D gira com rolagem e mouse
   gsap.fromTo("#mono", {rotationY:-35, rotationX:15}, {rotationY:25, rotationX:-10, ease:"none", scrollTrigger:{trigger:"#sobre", start:"top bottom", end:"bottom top", scrub:1}});
